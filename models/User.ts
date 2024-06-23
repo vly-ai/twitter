@@ -1,47 +1,55 @@
-/**
- * User Schema for MongoDB
- * This schema represents the user database model, defining the structure for how user data is stored.
- * A user can be registered, logged in, and have profile information, followers, and following relations.
- */
-
-import mongoose, { Schema, Document } from 'mongoose';
+import { Schema, Document, model, Types } from 'mongoose';
 
 /**
- * Interface for User Document
- * Extends MongoDB Document interface to provide typing for user schema
+ * User Schema
+ * 
+ * The User schema for storing user details. This includes necessary information such as the username,
+ * email, hashed password, profile details, and relationships like followers and following.
+ * This schema allows for user registration, login, profile management, and social interactions.
  */
+
 export interface IUser extends Document {
-  username: string;
-  email: string;
-  password: string;
-  bio?: string;
-  profile_picture?: string;
-  followers: Schema.Types.ObjectId[];
-  following: Schema.Types.ObjectId[];
+  username: string; // Username chosen by the user
+  email: string; // User's email address
+  password: string; // Hashed password of the user
+  profilePicture: string; // URL of the user's profile picture
+  bio: string; // Short biography of the user
+  followers: Types.ObjectId[]; // List of user IDs that follow this user
+  following: Types.ObjectId[]; // List of user IDs that this user follows
 }
 
-/**
- * User Schema Definition
- * - username: Unique identifier for the user
- * - email: User's email address
- * - password: Hashed password for the user
- * - bio: Optional user bio
- * - profile_picture: Optional URL to user's profile picture
- * - followers: List of users that follow this user
- * - following: List of users this user follows
- */
 const UserSchema: Schema = new Schema(
   {
-    username: { type: String, required: true, unique: true }, // Unique username for the user
-    email: { type: String, required: true, unique: true }, // User's email address
-    password: { type: String, required: true }, // Hashed password
-    bio: { type: String }, // Optional bio
-    profile_picture: { type: String }, // Optional profile picture URL
-    followers: [{ type: Schema.Types.ObjectId, ref: 'User' }], // List of follower user IDs
-    following: [{ type: Schema.Types.ObjectId, ref: 'User' }] // List of following user IDs
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    profilePicture: {
+      type: String,
+    },
+    bio: {
+      type: String,
+    },
+    followers: [{
+      type: Types.ObjectId,
+      ref: 'User'
+    }],
+    following: [{
+      type: Types.ObjectId,
+      ref: 'User'
+    }]
   },
-  { timestamps: true } // Automatically adds createdAt and updatedAt timestamps
+  { timestamps: true }
 );
 
-// Export the mongoose model
-export default mongoose.model<IUser>('User', UserSchema);
+export default model<IUser>('User', UserSchema);
