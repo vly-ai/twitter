@@ -1,59 +1,47 @@
-import { Schema, model, Document, Model } from 'mongoose';
-
 /**
- * @description The User Schema defines the structure of the user document in the MongoDB database.
- * It includes necessary information like username, email, password, profile details, and followers/following relationships.
+ * User Schema for MongoDB
+ * This schema represents the user database model, defining the structure for how user data is stored.
+ * A user can be registered, logged in, and have profile information, followers, and following relations.
  */
 
-// Interface for User Document with TypeScript
+import mongoose, { Schema, Document } from 'mongoose';
+
+/**
+ * Interface for User Document
+ * Extends MongoDB Document interface to provide typing for user schema
+ */
 export interface IUser extends Document {
-    username: string; // Username chosen by the user
-    email: string; // User's email address
-    password: string; // Hashed password of the user
-    profilePicture: string; // URL of the user's profile picture
-    bio: string; // Short biography of the user
-    followers: Schema.Types.ObjectId[]; // List of user IDs that follow this user
-    following: Schema.Types.ObjectId[]; // List of user IDs that this user follows
+  username: string;
+  email: string;
+  password: string;
+  bio?: string;
+  profile_picture?: string;
+  followers: Schema.Types.ObjectId[];
+  following: Schema.Types.ObjectId[];
 }
 
-// Mongoose User Schema Definition
-const UserSchema: Schema = new Schema<IUser>({
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        maxlength: 50
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true
-    },
-    password: {
-        type: String,
-        required: true
-    },
-    profilePicture: {
-        type: String,
-        default: ''
-    },
-    bio: {
-        type: String,
-        maxlength: 160
-    },
-    followers: [{
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    }],
-    following: [{
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    }]
-}, {
-    timestamps: true // Automatically manage createdAt and updatedAt timestamps
-});
+/**
+ * User Schema Definition
+ * - username: Unique identifier for the user
+ * - email: User's email address
+ * - password: Hashed password for the user
+ * - bio: Optional user bio
+ * - profile_picture: Optional URL to user's profile picture
+ * - followers: List of users that follow this user
+ * - following: List of users this user follows
+ */
+const UserSchema: Schema = new Schema(
+  {
+    username: { type: String, required: true, unique: true }, // Unique username for the user
+    email: { type: String, required: true, unique: true }, // User's email address
+    password: { type: String, required: true }, // Hashed password
+    bio: { type: String }, // Optional bio
+    profile_picture: { type: String }, // Optional profile picture URL
+    followers: [{ type: Schema.Types.ObjectId, ref: 'User' }], // List of follower user IDs
+    following: [{ type: Schema.Types.ObjectId, ref: 'User' }] // List of following user IDs
+  },
+  { timestamps: true } // Automatically adds createdAt and updatedAt timestamps
+);
 
-// User Model Creation
-export const User: Model<IUser> = model<IUser>('User', UserSchema);
+// Export the mongoose model
+export default mongoose.model<IUser>('User', UserSchema);
